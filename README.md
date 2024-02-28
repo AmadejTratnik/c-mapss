@@ -6,4 +6,24 @@ Reading an article *Damage Propagation Modelling for Aircraft Engine Run-to-Fail
 ## Exploratory Data Analysis
 4 Datasets (FD001-4) consist of multiple multivariate series. Each dataset has 3 operational settings and number of sensor measurements which are contaminated with noise over time.
 
+### Measurements visualization of dataset FD001
+
 [<img src="app/assets/eda.png"/>](app/assets/image.png) 
+
+
+## Installation
+Download the project from Github and change your current directory:
+```
+$ (base) cd c-mapps
+```
+Use a virtual environment to isolate your environment, and install the required dependencies.
+```
+$ (base) python3 -m venv venv
+$ (base) source venv/bin/activate
+$ (venv) pip3 install -r requirements.txt
+```
+
+To start real time background subtraction, simply write:
+```
+$ (venv) python3 app/visualisation.py
+```
