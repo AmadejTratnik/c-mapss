@@ -10,7 +10,7 @@ app = Dash(__name__, update_title=None,
            suppress_callback_exceptions=True,
            external_stylesheets=[dbc.themes.CYBORG])
 app.layout = layout
-app.title='RUL predictor'
+app.title='Fault Detector'
 
 
 get_callbacks(app)

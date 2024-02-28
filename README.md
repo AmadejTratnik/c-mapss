@@ -3,14 +3,6 @@
 
 Reading an article *Damage Propagation Modelling for Aircraft Engine Run-to-Failure Simulation* and trying to make a fault detection pipeline of a jet engine, with the help of C-MAPPS dataset and reccurent neural networks.
 
-## Exploratory Data Analysis
-4 Datasets (FD001-4) consist of multiple multivariate series. Each dataset has 3 operational settings and number of sensor measurements which are contaminated with noise over time.
-
-### Measurements visualization of dataset FD001
-
-[<img src="app/assets/eda.png"/>](app/assets/image.png) 
-
-
 ## Installation
 Download the project from Github and change your current directory:
 ```
@@ -23,7 +15,17 @@ $ (base) source venv/bin/activate
 $ (venv) pip3 install -r requirements.txt
 ```
 
-To start real time background subtraction, simply write:
+To start Fault Detector app, simply write:
 ```
 $ (venv) python3 app/visualisation.py
 ```
+
+
+## Exploratory Data Analysis
+4 Datasets (FD001-4) consist of multiple multivariate series. Each dataset has 3 operational settings and number of sensor measurements which are contaminated with noise over time.
+
+### Measurements visualization of dataset FD001
+
+[<img src="app/assets/eda.png"/>](app/assets/image.png) 
+
+
