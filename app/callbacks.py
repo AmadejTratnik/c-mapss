@@ -11,14 +11,13 @@ import dash_bootstrap_components as dbc
 def get_callbacks(app):
     @app.callback(
             Output('interval', 'n_intervals'),
-            Output({'type':'graph','id':ALL}, 'data'),
             Input('toggle-button','n_clicks'),
             State('interval','n_intervals'),
             State('interval','max_intervals'),
     )
     def start_interval_again(n,current_n,max_n):
         if current_n == max_n:
-            return 0, [[] for _ in range(len(dash.callback_context.outputs_list[1]))]
+            return 0#, [[] for _ in range(len(dash.callback_context.outputs_list[1]))]
         else:
             raise dash.exceptions.PreventUpdate
 
@@ -107,9 +106,6 @@ def get_callbacks(app):
             disabled =bool(n%2)
             return disabled,disabled,disabled
         raise dash.exceptions.PreventUpdate
-    
-
-
 
     @app.callback(
         Output({'type':'graph','id':ALL}, 'extendData'),
@@ -118,11 +114,11 @@ def get_callbacks(app):
         prevent_initial_call=True
     )
     def update_operational_setting_graph(n_intervals,data):
-        n_of_graphs = len(dash.callback_context.outputs_list)
         output_graphs = (dash.callback_context.outputs_list)
         if n_intervals==0:
             raise dash.exceptions.PreventUpdate
         s = []
+        
         result = [entry for entry in data if entry.get('time') == n_intervals][0]
         for x in output_graphs:
             current_value = x['id']['id'].split('graph-')[1]
@@ -135,7 +131,7 @@ def get_callbacks(app):
     prevent_initial_call=True
     )
     def take_data(value):
-        return make_dataframe('./data/'+value)
+        return make_dataframe(value)
     
     @app.callback(
         Output('unit-slider', 'min'),

@@ -8,18 +8,18 @@ from data_access import get_files_with_prefix
 N = 6
 df = pd.DataFrame()
 
-directory_path = './data/'
+directory_path = './data/raw/'
 prefix_list = ['train_', 'test_']
 
 layout = html.Div(
     children=[
-        html.H2("Prediction of Remaining Useful Life of JET engine",style={"textAlign":"center"}),
+        html.H2("Fault Detection of a JET Engine",style={"textAlign":"center"}),
         dbc.Row(
             style={'margin':'1%'},
             children=[
             dbc.Col(width=2,className="dash-bootstrap",children=[
                     html.Label("FD choice"),
-                    dcc.Dropdown(options = [{'label':x.replace('.txt', ''),'value':x} for x in get_files_with_prefix(directory_path, prefix_list)], id='fd-choice-dropdown'),
+                    dcc.Dropdown(options = [{'label':x.replace('.txt', '').replace(directory_path,''),'value':x} for x in get_files_with_prefix(directory_path, prefix_list)], id='fd-choice-dropdown'),
             ]),
                 dbc.Col(width=4,children=[
                     html.Label("Unit choice"),
@@ -55,7 +55,7 @@ layout = html.Div(
             id="rul-and-operational",
             style={'margin':'1%'},
             children=[dbc.Col(width=6, children=[
-                    html.P("RUL PREDICTION"),
+                    html.P("FAULT DETECTION"),
                     dcc.Graph(
                         id = {'type':'graph','id':f'graph-RUL'},
                         config={'displayModeBar': False},
