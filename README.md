@@ -26,6 +26,6 @@ $ (venv) python3 app/visualisation.py
 
 ### Measurements visualization of dataset FD001
 
-[<img src="app/assets/eda.png" width=100% height=600/>](app/assets/eda.png) 
+[<img src="app/assets/eda.png" width=100%/>](app/assets/eda.png) 
 
 
