@@ -1,15 +1,38 @@
+import os
 import pandas as pd
+from app.data_access import get_files_with_prefix
+
+
+def make_processed_data(raw_data_path='../data/raw/', proc_repo='../data/processed/'):
+    train_paths = get_files_with_prefix(raw_data_path, ['train'])
+    test_paths = get_files_with_prefix(raw_data_path, ['test'])
+    rul_paths = get_files_with_prefix(raw_data_path, ['RUL'])
+
+    print("Generating training data...")
+    for i, path in enumerate(train_paths):
+        final_path = f'train_FD00{i + 1}.csv'
+        df = DataSetMaker(train_set=True, path1=path).make_dataframe()
+        df.to_csv(proc_repo + final_path)
+
+    print("Generating testing data...")
+    for i, (path1, path2) in enumerate(zip(test_paths, rul_paths)):
+        final_path = f'test_FD00{i + 1}.csv'
+        df = DataSetMaker(train_set=True, path1=path1, path2=path2).make_dataframe()
+        df.to_csv(proc_repo + final_path)
+
+    print("The end.")
 
 class DataSetMaker:
-    def __init__(self, train_set: bool, path1: str, path2: str = None,warning: float = 0.7, fault: float = 0.1):
+    def __init__(self, train_set: bool, path1: str, path2: str = None, warning: float = 0.7, fault: float = 0.1):
+        N = 24
         self.train_set = train_set
         self.path1 = path1
         self.path2 = path2
-        self.warning =warning
+        self.warning = warning
         self.fault = fault
-        # Common column names
-        self.column_names = ['unit_number', 'time', 'operational_setting_1', 'operational_setting_2', 'operational_setting_3']
-        N = 24
+
+        self.column_names = ['unit_number', 'time', 'operational_setting_1', 'operational_setting_2',
+                             'operational_setting_3']
         self.column_names += [f'sensor_measurement_{i}' for i in range(1, N)]
 
     def make_dataframe(self) -> pd.DataFrame:
@@ -27,14 +50,14 @@ class DataSetMaker:
                 with open(self.path2, 'r') as file:
                     rul_test_values = [int(line.strip()) for line in file]
 
-                df['RUL'] += [rul_test_values[unit_num-1] for unit_num in df['unit_number']]
-        
+                df['RUL'] += [rul_test_values[unit_num - 1] for unit_num in df['unit_number']]
+
         df['fault_detected'] = df.groupby('unit_number')['RUL'].transform(self.detect_fault)
 
-        df.drop(columns=['RUL','max_time'], inplace=True)
+        df.drop(columns=['RUL', 'max_time'], inplace=True)
         return df
 
-    def detect_fault(self,rul):
+    def detect_fault(self, rul):
 
         if isinstance(rul, pd.Series):
             total_cycles = rul.max()  # Maximum cycle for the unit
@@ -61,10 +84,9 @@ class DataSetMaker:
             raise ValueError("Invalid input type for 'rul'. It should be either int, float, or pd.Series.")
 
 if __name__ == '__main__':
-
-    train_set_maker = DataSetMaker(train_set=True, path1="./data/raw/train_FD001.txt")
-    train_df = train_set_maker.make_dataframe()
-
+    # df = DataSetMaker(train_set=True, path1="../data/raw/train_FD001.txt").make_dataframe()
+    # print(df)
+    '''
     test_set_maker = DataSetMaker(train_set=False, path1="./data/raw/test_FD001.txt", path2='./data/raw/RUL_FD001.txt')
     test_df = test_set_maker.make_dataframe()
 
@@ -77,23 +99,8 @@ if __name__ == '__main__':
     print("\nTest Dataset Distribution:")
     print(test_distribution)
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    import numpy as np
-   
-    train_percentiles = np.percentile(train_df["fault_detected"], np.linspace(0, 100, 101))
-    test_percentiles = np.percentile(test_df["fault_detected"], np.linspace(0, 100, 101))
+    '''
 
-    # Create the plot
-    plt.plot(train_percentiles, test_percentiles, linestyle='-', marker='o', label='Q-Q Plot')
+    make_processed_data('../data/raw/', '../data/processed/')
 
-    # Add diagonal line for reference
-    plt.plot([0, 1], [0, 1], color='red', linestyle='--', label='Ideal Distribution')
-
-    # Set labels and title
-    plt.xlabel("Quantiles (Train)")
-    plt.ylabel("Quantiles (Test)")
-    plt.title("Custom Q-Q Plot for Fault Detection Distribution")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("fault_distribution.png")  # Replace with desired filename and format
+    pass
