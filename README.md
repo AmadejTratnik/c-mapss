@@ -1,10 +1,10 @@
 # Fault Detection of JET engine
 [<img src="app/assets/image.png" width="250"/>](app/assets/image.png) 
 
-Reading an article *Damage Propagation Modelling for Aircraft Engine Run-to-Failure Simulation* and trying to make a fault detection pipeline of a jet engine, with the help of C-MAPPS dataset and reccurent neural networks.
+Reading an article *Damage Propagation Modelling for Aircraft Engine Run-to-Failure Simulation* and trying to reformat it into a fault detection pipeline of a jet engine, with the help of C-MAPPS dataset and reccurent neural networks.
 
 ## Installation
-Download the project from Github and change your current directory:
+Download the project from GitHub and change your current directory:
 ```
 $ (base) cd c-mapps
 ```
