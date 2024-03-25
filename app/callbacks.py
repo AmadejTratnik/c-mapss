@@ -1,3 +1,5 @@
+from random import random
+
 import dash
 from dash.dependencies import Input, Output, State, ALL, MATCH
 import numpy as np
@@ -5,7 +7,7 @@ import numpy as np
 from app.data_access import get_dataframe
 from layout import N, df
 import pandas as pd
-from dash import html, dcc
+from dash import html, dcc, clientside_callback
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
@@ -78,9 +80,9 @@ def get_callbacks(app):
     )
     def build_operations_and_prediction(setting, graphs):
         if not setting:
-            graphs[1] = dbc.Col(width=2)
+            graphs[2] = dbc.Col(width=2)
         else:
-            graphs[1] = dbc.Col(width=2, children=[
+            graphs[2] = dbc.Col(width=2, children=[
                 html.P(" ".join(setting.split('_')).upper()),
                 dcc.Graph(
                     id={'type': 'graph', 'id': f'graph-{setting}'},
@@ -111,28 +113,50 @@ def get_callbacks(app):
         raise dash.exceptions.PreventUpdate
 
     @app.callback(
-        Output({'type': 'graph1', 'id': f'graph-fault_detected'}, 'figure'),
-        [Input('interval', 'n_intervals')],
+        Output("graph-fault_calculated-div", 'style'),
+        Input('fd-choice-dropdown', 'value'),
+        State("graph-fault_calculated-div", 'style'),
+    )
+    def toggle_calculated_graph(choice, style):
+        if choice is None:
+            raise dash.exceptions.PreventUpdate
+        if "test" in choice:
+            style['display'] = 'None'
+        if "train" in choice:
+            style['display'] = 'block'
+        return style
+
+    @app.callback(
+        Output({'type': 'graph1', 'id': f'graph-fault_calculated'}, 'extendData'),
+        Input('interval', 'n_intervals'),
+        State("graph-fault_calculated-div", 'style'),
+        State('graph-data-store', 'data'),
         prevent_initial_call=True
     )
-    def update_graph(n):
-        colors = ['green', 'yellow', 'red']
-        y = np.random.randint(low=0, high=3)
-        print(y)
-        color = colors[y % len(colors)]
-        fig = go.Figure(
-            data=[go.Bar(x=[0], y=[y], orientation='v',
-                         marker=dict(color=color))],
-            layout=dict(
-                paper_bgcolor="rgba(0, 0, 0, 0)",
-                plot_bgcolor="rgba(0, 0, 0, 0)",
-                xaxis=dict(showline=False, visible=False, showgrid=False, zeroline=False, fixedrange=True),
-                yaxis=dict(showline=False, visible=False, showgrid=False, zeroline=False, fixedrange=True),
-                margin=dict(t=0, b=0, l=0, r=0),
-            )
-        )
+    def update_calculated_graph(n_intervals, style, data):
+        if style.get('display', "block") is None or not len(data):
+            raise dash.exceptions.PreventUpdate
+        df = pd.DataFrame(data)
+        new_y2 = df[df['time'] == n_intervals]['fault_detected'].iloc[0]
 
-        return fig
+        y2_data = [{'x': [[n_intervals]], 'y': [[new_y2]]}, [0], 10]
+        return y2_data
+
+    @app.callback(
+        Output({'type': 'graph1', 'id': f'graph-fault_detected'}, 'extendData'),
+        Input('interval', 'n_intervals'),
+
+        prevent_initial_call=True
+    )
+    def update_graph(n_intervals):
+        if n_intervals is None:
+            raise dash.exceptions.PreventUpdate
+
+        new_y1 = random()
+
+        y1_data = [{'x': [[n_intervals]], 'y': [[new_y1]]}, [0], 10]
+
+        return y1_data
 
     @app.callback(
         Output({'type': 'graph', 'id': ALL}, 'extendData'),

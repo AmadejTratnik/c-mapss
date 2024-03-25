@@ -57,24 +57,56 @@ layout = html.Div(
         dbc.Row(
             id="fd-and-operational",
             style={'margin': '1%'},
-            children=[dbc.Col(width=2, children=[
-                html.P("FAULT DETECTION"),
-                dcc.Graph(
-                    id={'type': 'graph1', 'id': f'graph-fault_detected'},
-                    config={'displayModeBar': False},
-                    style={'height': '200px'},
-                    figure=go.Figure(
-                        data=[go.Bar(x=[0], y=[0], orientation='v')],
-                        layout=dict(
-                            paper_bgcolor="rgba(0, 0, 0, 0)",
-                            plot_bgcolor="rgba(0, 0, 0, 0)",
-                            xaxis=dict(showline=False, visible=False, showgrid=False, zeroline=False, fixedrange=True),
-                            yaxis=dict(showline=False, visible=False, showgrid=False, zeroline=False, fixedrange=True),
-                            margin=dict(t=0, b=0, l=0, r=0),
-                        )
-                    )
-                ),
-            ], style={'border': '1px solid white', 'padding': '10px', 'margin': '5px'}),
+            children=[dbc.Col(width=2,
+                              id="graph-fault_calculated-div",
+                              children=[
+
+                                  html.P("CALCULATED FAULT"),
+                                  dcc.Graph(
+                                      id={'type': 'graph1', 'id': f'graph-fault_calculated'},
+                                      config={'displayModeBar': False},
+                                      style={'height': '200px'},
+                                      figure=go.Figure(
+                                          data=[go.Scattergl(x=[], y=[], mode='lines', line=dict(color='blue'))],
+                                          layout=dict(paper_bgcolor="rgba(0, 0, 0, 0)", plot_bgcolor="rgba(0, 0, 0, 0)",
+                                                      xaxis=dict(showline=False, visible=False, showgrid=False,
+                                                                 zeroline=True,
+                                                                 fixedrange=False),
+                                                      yaxis=dict(showline=False,
+                                                                 range=[0, 2],
+                                                                 visible=False, showgrid=False,
+                                                                 zeroline=False,
+                                                                 fixedrange=True),
+                                                      margin=dict(t=0, b=0, l=0, r=0),
+                                                      autosize=True, )
+                                      )
+                                  ),
+                              ], style={'border': '1px solid white', 'padding': '10px', 'margin': '5px',
+                                        'display': 'None'}),
+
+                      dbc.Col(width=2, children=[
+                          html.P("PREDICTED FAULT"),
+                          dcc.Graph(
+                              id={'type': 'graph1', 'id': f'graph-fault_detected'},
+                              config={'displayModeBar': False},
+                              style={'height': '200px'},
+                              figure=go.Figure(
+                                  data=[go.Scattergl(x=[], y=[], mode='lines',
+                                                     line=dict(color='red')),
+                                        ],
+                                  layout=dict(paper_bgcolor="rgba(0, 0, 0, 0)", plot_bgcolor="rgba(0, 0, 0, 0)",
+                                              xaxis=dict(showline=False, visible=False, showgrid=True, zeroline=False,
+                                                         fixedrange=False),
+                                              yaxis=dict(showline=False,
+                                                         range=[0, 2],
+                                                         visible=False, showgrid=False,
+                                                         zeroline=False,
+                                                         fixedrange=True),
+                                              margin=dict(t=0, b=0, l=0, r=0),
+                                              autosize=True, )
+                              )
+                          ),
+                      ], style={'border': '1px solid white', 'padding': '10px', 'margin': '5px'}),
                       dbc.Col(width=2)],
         ),
 
