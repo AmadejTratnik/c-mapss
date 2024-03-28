@@ -11,8 +11,12 @@ from dash import html, dcc, clientside_callback
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
+from modelling.inference import load_jet_model
+
 
 def get_callbacks(app):
+    model = load_jet_model('../modelling/FD001_model.keras')
+
     @app.callback(
         Output('interval', 'n_intervals'),
         Input('toggle-button', 'n_clicks'),
@@ -130,32 +134,34 @@ def get_callbacks(app):
         Output({'type': 'graph1', 'id': f'graph-fault_calculated'}, 'extendData'),
         Input('interval', 'n_intervals'),
         State("graph-fault_calculated-div", 'style'),
-        State('graph-data-store', 'data'),
+        State('data-store', 'data'),
+        State('unit-slider', 'value'),
         prevent_initial_call=True
     )
-    def update_calculated_graph(n_intervals, style, data):
+    def update_calculated_graph(n_intervals, style, data,unit_value):
         if style.get('display', "block") is None or not len(data):
             raise dash.exceptions.PreventUpdate
         df = pd.DataFrame(data)
+        print(df.columns)
+        X =df[df['time'] == n_intervals]
+        X = X[X['unit-number'] == unit_value]
+        print(X.columns)
         new_y2 = df[df['time'] == n_intervals]['fault_detected'].iloc[0]
-
         y2_data = [{'x': [[n_intervals]], 'y': [[new_y2]]}, [0], 10]
         return y2_data
 
     @app.callback(
         Output({'type': 'graph1', 'id': f'graph-fault_detected'}, 'extendData'),
         Input('interval', 'n_intervals'),
-
+        State('graph-data-store', 'data'),
         prevent_initial_call=True
     )
-    def update_graph(n_intervals):
+    def update_graph(n_intervals, data):
         if n_intervals is None:
             raise dash.exceptions.PreventUpdate
-
+        df = pd.DataFrame(data)
         new_y1 = random()
-
         y1_data = [{'x': [[n_intervals]], 'y': [[new_y1]]}, [0], 10]
-
         return y1_data
 
     @app.callback(

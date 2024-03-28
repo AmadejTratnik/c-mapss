@@ -5,3 +5,9 @@ Taking a look at example of sensor measurements, we can see non-linear trends in
 
 ### Measurements visualization of dataset FD001
 [<img src="../app/assets/eda.png"/>](app/assets/eda.png) 
+
+## Modelling
+We want to build a RNN that can handle a stream of sensor measurements and produce a one-hot-encoded vector in real time.
+Each unit has a different number of time cycles. 
+
+We can structure the data such that each unit's data is treated as a separate sequence. 
