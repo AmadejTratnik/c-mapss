@@ -61,9 +61,9 @@ layout = html.Div(
                               id="graph-fault_calculated-div",
                               children=[
 
-                                  html.P("CALCULATED FAULT"),
+                                  html.P("MEASURED FAULT"),
                                   dcc.Graph(
-                                      id={'type': 'graph1', 'id': f'graph-fault_calculated'},
+                                      id={'type': 'graph', 'id': f'graph-fault_detected'},
                                       config={'displayModeBar': False},
                                       style={'height': '200px'},
                                       figure=go.Figure(
@@ -87,7 +87,7 @@ layout = html.Div(
                       dbc.Col(width=2, children=[
                           html.P("PREDICTED FAULT"),
                           dcc.Graph(
-                              id={'type': 'graph1', 'id': f'graph-fault_detected'},
+                              id={'type': 'graph1', 'id': f'graph-fault_predicted'},
                               config={'displayModeBar': False},
                               style={'height': '200px'},
                               figure=go.Figure(
@@ -110,9 +110,9 @@ layout = html.Div(
                       dbc.Col(width=2)],
         ),
 
-        dcc.Interval(id="interval", interval=50, max_intervals=100, disabled=True),
+        dcc.Interval(id="interval", interval=100, max_intervals=100, disabled=True),
         dcc.Store(id='data-store', data={}),
         dcc.Store(id='graph-data-store', data={}),
-
+        dcc.Store(id='unit-prediction-matrix', data=[]),
     ],
 )
