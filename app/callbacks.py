@@ -5,13 +5,13 @@ from dash.dependencies import Input, Output, State, ALL, MATCH
 import numpy as np
 
 from app.data_access import get_dataframe
-from layout import N, df
+from layout import N
 import pandas as pd
-from dash import html, dcc, clientside_callback
+from dash import html, dcc
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
-from modelling.inference import load_jet_model
+from modelling.inference import load_jet_model, predict_fault
 
 
 def get_callbacks(app):
@@ -131,38 +131,20 @@ def get_callbacks(app):
         return style
 
     @app.callback(
-        Output({'type': 'graph1', 'id': f'graph-fault_calculated'}, 'extendData'),
+        Output({'type': 'graph1', 'id': f'graph-fault_predicted'}, 'extendData'),
         Input('interval', 'n_intervals'),
         State("graph-fault_calculated-div", 'style'),
-        State('data-store', 'data'),
-        State('unit-slider', 'value'),
+        State('unit-prediction-matrix', 'data'),
         prevent_initial_call=True
     )
-    def update_calculated_graph(n_intervals, style, data,unit_value):
-        if style.get('display', "block") is None or not len(data):
+    def update_calculated_graph(n_intervals, style, prediction_matrix):
+        if style.get('display', "block") is None or not len(prediction_matrix):
             raise dash.exceptions.PreventUpdate
-        df = pd.DataFrame(data)
-        print(df.columns)
-        X =df[df['time'] == n_intervals]
-        X = X[X['unit-number'] == unit_value]
-        print(X.columns)
-        new_y2 = df[df['time'] == n_intervals]['fault_detected'].iloc[0]
+        new_x = prediction_matrix[n_intervals]
+        new_x = np.array([[new_x]])
+        new_y2 = predict_fault(model, new_x)
         y2_data = [{'x': [[n_intervals]], 'y': [[new_y2]]}, [0], 10]
         return y2_data
-
-    @app.callback(
-        Output({'type': 'graph1', 'id': f'graph-fault_detected'}, 'extendData'),
-        Input('interval', 'n_intervals'),
-        State('graph-data-store', 'data'),
-        prevent_initial_call=True
-    )
-    def update_graph(n_intervals, data):
-        if n_intervals is None:
-            raise dash.exceptions.PreventUpdate
-        df = pd.DataFrame(data)
-        new_y1 = random()
-        y1_data = [{'x': [[n_intervals]], 'y': [[new_y1]]}, [0], 10]
-        return y1_data
 
     @app.callback(
         Output({'type': 'graph', 'id': ALL}, 'extendData'),
@@ -189,6 +171,23 @@ def get_callbacks(app):
     )
     def take_data(value):
         return get_dataframe(value)
+
+    @app.callback(
+        Output('unit-prediction-matrix', 'data'),
+        Input('unit-slider', 'value'),
+        State('data-store', 'data'),
+    )
+    def update_prediction_matrix(value, data):
+        if not data or not len(data):
+            raise dash.exceptions.PreventUpdate
+
+        df = pd.DataFrame(data)
+        df = df[df['unit_number'] == value]
+        df.drop(columns=['unit_number', 'fault_detected'], inplace=True)
+        time_data = []
+        for _, row in df.iterrows():
+            time_data.append(row.tolist()[1:])
+        return time_data
 
     @app.callback(
         Output('unit-slider', 'min'),
