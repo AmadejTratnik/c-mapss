@@ -10,7 +10,10 @@ def get_files_with_prefix(directory_path: str, prefix_list: list) -> list[str]:
 
 
 def get_dataframe(value: str) -> dict:
-    return pd.read_csv(value).to_dict('records')
+    df = pd.read_csv(value)
+    if 'Unnamed: 0' in df.columns:
+        df.drop(columns=['Unnamed: 0'], inplace=True)
+    return df.to_dict('records')
 
 
 if __name__ == '__main__':
