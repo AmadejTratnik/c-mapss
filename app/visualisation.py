@@ -12,4 +12,4 @@ get_callbacks(app)
 
 
 if __name__ == '__main__':
-    app.run_server(port=1129, debug=True)
+    app.run_server(port=8888, debug=False)
