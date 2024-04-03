@@ -1,75 +1,108 @@
+import time
+
 import numpy as np
 from data_preprocess import get_train_test_data
 from models import create_model
 
 
-def train_model_individual_sequences(model, sequences, targets, epochs=10, validation_data=None):
+def train_model_individual_sequences(model, sequences, targets, X_test, y_test, epochs, patience=4):
+    best_val_loss = np.inf  # implementing early stopping, if validation loss doesnt get any better
+    early_stopping_count = 0
     train_losses = []
     train_accuracies = []
     val_losses = []
     val_accuracies = []
+    L = len(list(X_test))
     for epoch in range(1, epochs + 1):
+
         total_loss = 0
         total_accuracy = 0
         for X_sequence, y_sequence in (zip(sequences, targets)):
             X_sequence = np.array([X_sequence])
             y_sequence = np.array([y_sequence])
 
-            # Train on the individual sequence
             history = model.fit(X_sequence, y_sequence, epochs=1, batch_size=1, verbose=0)
             total_loss += history.history['loss'][0]
             total_accuracy += history.history['accuracy'][0]
 
-        # Calculate average loss and accuracy
         avg_loss = total_loss / len(sequences)
         avg_accuracy = total_accuracy / len(sequences)
 
-        # Print epoch summary
         print(f"Epoch {epoch}/{epochs} - Loss: {avg_loss:.4f} - Accuracy: {avg_accuracy:.4f}")
         train_losses.append(avg_loss)
         train_accuracies.append(avg_accuracy)
-        if validation_data:
-            flat_validation_data_x = np.concatenate(validation_data[0], axis=0)
-            flat_validation_data_y = np.concatenate(validation_data[1], axis=0)
 
-            np_validation_data_x = flat_validation_data_x.reshape(-1, 1, flat_validation_data_x.shape[1])
-            np_validation_data_y = flat_validation_data_y.reshape(-1, 1, flat_validation_data_y.shape[1])
-            val_loss, val_accuracy = model.evaluate(np_validation_data_x, np_validation_data_y, verbose=0)
-            val_losses.append(val_loss)
-            val_accuracies.append(val_accuracy)
+        if X_test:
+            val_loss = 0
+            val_accuracy = 0
+            for val_X, val_y in zip(X_test, y_test):
+                val_X_sequence = np.array([val_X])
+                val_y_sequence = np.array([val_y])
+                predictions = model.predict(val_X_sequence, verbose=0)
+                batch_accuracy = np.mean(np.argmax(predictions, axis=-1) == np.argmax(val_y_sequence, axis=-1))
+                val_accuracy += batch_accuracy
+                batch_loss = -np.mean(np.sum(val_y_sequence * np.log(predictions), axis=-1))
+                val_loss += batch_loss
+                # print(f"    - Batch loss: {batch_loss} -> batch accuracy {batch_accuracy}")
 
-            print(f" - Val Loss: {val_loss:.4f} - Val Accuracy: {val_accuracy:.4f}")
-    return model, train_losses, train_accuracies,val_losses,val_accuracies
+            avg_val_loss = val_loss / L
+            avg_val_accuracy = val_accuracy / L
+            val_losses.append(avg_val_loss)
+            val_accuracies.append(avg_val_accuracy)
+            print(f" - Val Loss: {avg_val_loss:.4f} - Val Accuracy: {avg_val_accuracy:.4f}")
+
+            if avg_val_loss < best_val_loss:
+                best_val_loss = avg_val_loss
+                early_stopping_count = 0
+            else:
+                early_stopping_count += 1
+
+            if early_stopping_count >= patience:
+                print("Early stopping triggered!")
+                break
+    return model, train_losses, train_accuracies, val_losses, val_accuracies
 
 
 def save_model(model, filename):
     model.save(filename)
 
 
-def main():
-    jet = 'FD001'
-    EPOCHS = 130
-    X_train, y_train, X_test, y_test = get_train_test_data(jet)
-    input_shape = (None, X_train[0].shape[1])
-    num_classes = y_train[0].shape[1]
-    model = create_model(input_shape, num_classes)
-    validation_data = (X_test, y_test)
-    trained_model, train_losses, train_accuracies,val_losses,val_accuracies = train_model_individual_sequences(model, X_train, y_train, epochs=EPOCHS,
-                                                                       validation_data=validation_data)
-    save_model(trained_model, f"{jet}_model.keras")
-
+def save_fig(jet, epochs, train_losses, train_accuracies, val_losses=None, val_accuracies=None):
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 6))
 
-    plt.plot(range(EPOCHS), train_losses, label='Training Loss')
-    plt.plot(range(EPOCHS), train_accuracies, label='Training Accuracy')
-    plt.plot(range(EPOCHS), val_losses, label='Validation Loss')
-    plt.plot(range(EPOCHS), val_accuracies, label='Validation Accuracy')
+    epochs = min(epochs, len(train_losses))  # early stopping validation
+
+    plt.plot(range(epochs), train_losses, label='Training Loss')
+    plt.plot(range(epochs), train_accuracies, label='Training Accuracy')
+    if val_losses:
+        plt.plot(range(epochs), val_losses, label='Validation Loss')
+    if val_accuracies:
+        plt.plot(range(epochs), val_accuracies, label='Validation Accuracy')
     plt.title(f'Losses and Accuracies for {jet}')
     plt.xlabel('Epoch')
     plt.ylabel('Loss/Accuracy')
     plt.legend()
-    plt.savefig('losses_and_accuracies.png')  # Adjust file name as needed
+    plt.savefig('losses_and_accuracies.png')
+
+
+def main():
+    jet = 'FD001'
+    EPOCHS = 100
+    X_train, y_train, X_test, y_test = get_train_test_data(jet)
+    input_shape = (None, X_train[0].shape[1])
+    num_classes = y_train[0].shape[1]
+    model = create_model(input_shape, num_classes)
+    trained_model, train_losses, train_accuracies, val_losses, val_accuracies = train_model_individual_sequences(
+        model,
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        epochs=EPOCHS,
+        patience=20)
+    save_model(trained_model, f"{jet}_model.keras")
+    save_fig(jet, EPOCHS, train_losses, train_accuracies, val_losses, val_accuracies)
 
 
 if __name__ == '__main__':
