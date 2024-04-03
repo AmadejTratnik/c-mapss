@@ -1,13 +1,41 @@
 # Exploratory Data Analysis
-4 Datasets (FD001-4) consist of multiple multivariate series. Each dataset has 3 operational settings and number of sensor measurements which are contaminated with noise over time.
-
-Taking a look at example of sensor measurements, we can see non-linear trends in some, caused by noises in sensors.
++ 4 Datasets (FD001-4) consist of multiple multivariate series. 
++ Each dataset has 3 operational settings and number of
+sensor measurements which are contaminated with noise over time.
++ Taking a look at example of sensor measurements for **FD001** jet, we can see non-linear trends in some, caused by noises in sensors.
++ Since the non-linearity holds, neural network approach should be advised.
 
 ### Measurements visualization of dataset FD001
-[<img src="../app/assets/eda.png"/>](app/assets/eda.png) 
 
-## Modelling
-We want to build a RNN that can handle a stream of sensor measurements and produce a one-hot-encoded vector in real time.
-Each unit has a different number of time cycles. 
+[<img src="../app/assets/eda.png"/>](app/assets/eda.png)
 
-We can structure the data such that each unit's data is treated as a separate sequence. 
+# Modelling
++ We want to build a RNN that can handle a stream of sensor measurements and produce a one-hot-encoded vector in real
+time.
++ Each jet supposedly has different type and number of sensor measurements. Each unit has a different number of time
+cycles. Therefore, we will make a model for each of the jets.
++ We can structure the data such that each unit's data is treated as a separate sequence and train our *batches* like that.
+
+
+### Problems with modelling
+
++ Our base model was prone to the overfitting, we also got double descent at 130 epochs, probably because of over
+parametrization of the model, since the dataset is relatively small.
++ Validation calculation is slow and should be optimized for bigger datasets.
+## Final results
+
+### Train / validation losses
+|                                         FDOO1                                         |                                         FD002                                         | FD003                                                                                 | FD004                                                                                 |
+|:-------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+|                                                                                       |                                                                                       |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+
+### Final parameters descriptions
+|              |                                         FDOO1                                         |                                         FD002                                         | FD003                                                                                 | FD004                                                                                 |
+|:-------------------------------:|:-------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+|   Final train/validation loss   |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+| Final train/validation accuracy |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+|          Learning rate          |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+|            Optimizer            |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+|      Losses and accuracies      |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+|             Epochs              |                                                                                       |                                                                                       |                                                                                       |                                                                                       |
+|       Model architecture        | [<img src="../app/assets/FD001_model.png" height=500px/>](app/assets/FD001_model.png) | [<img src="../app/assets/FD002_model.png" height=500px/>](app/assets/FD002_model.png) | [<img src="../app/assets/FD003_model.png" height=500px/>](app/assets/FD003_model.png) | [<img src="../app/assets/FD004_model.png" height=500px/>](app/assets/FD004_model.png) |
