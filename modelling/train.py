@@ -83,27 +83,28 @@ def save_fig(jet, epochs, train_losses, train_accuracies, val_losses=None, val_a
     plt.xlabel('Epoch')
     plt.ylabel('Loss/Accuracy')
     plt.legend()
-    plt.savefig('losses_and_accuracies.png')
+    plt.savefig(f'../app/assets/{jet}_losses_and_accuracies.png')
 
 
 def main():
-    jet = 'FD001'
-    EPOCHS = 100
-    X_train, y_train, X_test, y_test = get_train_test_data(jet)
-    input_shape = (None, X_train[0].shape[1])
-    num_classes = y_train[0].shape[1]
-    model = create_model(input_shape, num_classes)
-    trained_model, train_losses, train_accuracies, val_losses, val_accuracies = train_model_individual_sequences(
-        model,
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        epochs=EPOCHS,
-        patience=20)
-    save_model(trained_model, f"{jet}_model.keras")
-    save_fig(jet, EPOCHS, train_losses, train_accuracies, val_losses, val_accuracies)
-
+    jets = 'FD001','FD002','FD003','FD004'
+    for jet in jets:
+        EPOCHS = 100
+        X_train, y_train, X_test, y_test = get_train_test_data(jet)
+        input_shape = (None, X_train[0].shape[1])
+        num_classes = y_train[0].shape[1]
+        model = create_model(input_shape, num_classes)
+        trained_model, train_losses, train_accuracies, val_losses, val_accuracies = train_model_individual_sequences(
+            model,
+            X_train,
+            y_train,
+            X_test,
+            y_test,
+            epochs=EPOCHS,
+            patience=20)
+        print(f"For jet {jet} we got to {len(train_losses)} epochs")
+        save_model(trained_model, f"models/{jet}_model.keras")
+        save_fig(jet, EPOCHS, train_losses, train_accuracies, val_losses, val_accuracies)
 
 if __name__ == '__main__':
     main()

@@ -17,7 +17,7 @@ def generate_random_input_data(batch_size, time_steps, num_features):
 
 
 if __name__ == '__main__':
-    model = load_jet_model('FD001_model.keras')
+    model = load_jet_model('models/FD001_model.keras')
     batch_size = 10
     time_steps = 500
     num_features = 24
