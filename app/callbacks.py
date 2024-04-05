@@ -1,21 +1,21 @@
 from random import random
-
+import sys
+sys.path.append('./')
 import dash
 from dash.dependencies import Input, Output, State, ALL, MATCH
 import numpy as np
-
-from app.data_access import get_dataframe
+from data_access import get_dataframe
 from layout import N
 import pandas as pd
 from dash import html, dcc
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
-from modelling.inference import load_jet_model, predict_fault
+from modelling.inference import load_jet_model
 
 
 def get_callbacks(app):
-    model = load_jet_model('../modelling/models/FD001_model.keras')
+    model = load_jet_model('./modelling/models/FD001_model.keras')
 
     @app.callback(
         Output('interval', 'n_intervals'),

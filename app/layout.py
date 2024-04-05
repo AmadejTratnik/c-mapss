@@ -8,7 +8,7 @@ from data_access import get_files_with_prefix
 N = 6
 df = pd.DataFrame()
 
-directory_path = '../data/processed/'
+directory_path = './data/processed/'
 prefix_list = ['train_', 'test_']
 
 layout = html.Div(
