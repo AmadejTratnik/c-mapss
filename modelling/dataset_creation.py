@@ -3,7 +3,7 @@ import pandas as pd
 from app.data_access import get_files_with_prefix
 
 
-def make_processed_data(raw_data_path='../data/raw/', proc_repo='../data/processed/'):
+def make_processed_data(raw_data_path='../data/raw/', proc_repo='../data/processed/', warning=0.7, fault=0.1):
     train_paths = get_files_with_prefix(raw_data_path, ['train'])
     test_paths = get_files_with_prefix(raw_data_path, ['test'])
     rul_paths = get_files_with_prefix(raw_data_path, ['RUL'])
@@ -11,16 +11,17 @@ def make_processed_data(raw_data_path='../data/raw/', proc_repo='../data/process
     print("Generating training data...")
     for i, path in enumerate(train_paths):
         final_path = f'train_FD00{i + 1}.csv'
-        df = DataSetMaker(train_set=True, path1=path).make_dataframe()
+        df = DataSetMaker(train_set=True, path1=path, warning=warning, fault=fault).make_dataframe()
         df.to_csv(proc_repo + final_path)
 
     print("Generating testing data...")
     for i, (path1, path2) in enumerate(zip(test_paths, rul_paths)):
         final_path = f'test_FD00{i + 1}.csv'
-        df = DataSetMaker(train_set=True, path1=path1, path2=path2).make_dataframe()
+        df = DataSetMaker(train_set=True, path1=path1, path2=path2, warning=warning, fault=fault).make_dataframe()
         df.to_csv(proc_repo + final_path)
 
     print("The end.")
+
 
 class DataSetMaker:
     def __init__(self, train_set: bool, path1: str, path2: str = None, warning: float = 0.7, fault: float = 0.1):
@@ -83,6 +84,7 @@ class DataSetMaker:
         else:
             raise ValueError("Invalid input type for 'rul'. It should be either int, float, or pd.Series.")
 
+
 if __name__ == '__main__':
     # df = DataSetMaker(train_set=True, path1="../data/raw/train_FD001.txt").make_dataframe()
     # print(df)
@@ -100,7 +102,5 @@ if __name__ == '__main__':
     print(test_distribution)
 
     '''
-
-    make_processed_data('../data/raw/', '../data/processed/')
-
+    make_processed_data('../data/raw/', '../data/processed/', warning=0.66, fault=0.33)
     pass
