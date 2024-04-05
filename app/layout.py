@@ -113,6 +113,6 @@ layout = html.Div(
         dcc.Interval(id="interval", interval=100, max_intervals=100, disabled=True),
         dcc.Store(id='data-store', data={}),
         dcc.Store(id='graph-data-store', data={}),
-        dcc.Store(id='unit-prediction-matrix', data=[]),
+        dcc.Store(id='unit-prediction-vector', data=[]),
     ],
 )
