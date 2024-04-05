@@ -15,7 +15,7 @@ from modelling.inference import load_jet_model, predict_fault
 
 
 def get_callbacks(app):
-    model = load_jet_model('../modelling/FD001_model.keras')
+    model = load_jet_model('../modelling/models/FD001_model.keras')
 
     @app.callback(
         Output('interval', 'n_intervals'),
@@ -134,15 +134,13 @@ def get_callbacks(app):
         Output({'type': 'graph1', 'id': f'graph-fault_predicted'}, 'extendData'),
         Input('interval', 'n_intervals'),
         State("graph-fault_calculated-div", 'style'),
-        State('unit-prediction-matrix', 'data'),
+        State('unit-prediction-vector', 'data'),
         prevent_initial_call=True
     )
-    def update_calculated_graph(n_intervals, style, prediction_matrix):
-        if style.get('display', "block") is None or not len(prediction_matrix):
+    def update_calculated_graph(n_intervals, style, prediction_vector):
+        if style.get('display', "block") is None or not len(prediction_vector) or n_intervals >= len(prediction_vector):
             raise dash.exceptions.PreventUpdate
-        new_x = prediction_matrix[n_intervals]
-        new_x = np.array([[new_x]])
-        new_y2 = predict_fault(model, new_x)
+        new_y2 = prediction_vector[n_intervals]
         y2_data = [{'x': [[n_intervals]], 'y': [[new_y2]]}, [0], 10]
         return y2_data
 
@@ -173,7 +171,7 @@ def get_callbacks(app):
         return get_dataframe(value)
 
     @app.callback(
-        Output('unit-prediction-matrix', 'data'),
+        Output('unit-prediction-vector', 'data'),
         Input('unit-slider', 'value'),
         State('data-store', 'data'),
     )
@@ -183,11 +181,14 @@ def get_callbacks(app):
 
         df = pd.DataFrame(data)
         df = df[df['unit_number'] == value]
+        fault_detected = df['fault_detected']
         df.drop(columns=['unit_number', 'fault_detected'], inplace=True)
         time_data = []
         for _, row in df.iterrows():
             time_data.append(row.tolist()[1:])
-        return time_data
+        new_x = np.array([time_data])
+        new_predictions = np.argmax(model.predict(new_x),axis=-1)[0]
+        return new_predictions
 
     @app.callback(
         Output('unit-slider', 'min'),
