@@ -1,5 +1,9 @@
+import argparse
 import os
 import pandas as pd
+import sys
+
+sys.path.append('.')
 from app.data_access import get_files_with_prefix
 
 
@@ -86,21 +90,11 @@ class DataSetMaker:
 
 
 if __name__ == '__main__':
-    # df = DataSetMaker(train_set=True, path1="../data/raw/train_FD001.txt").make_dataframe()
-    # print(df)
-    '''
-    test_set_maker = DataSetMaker(train_set=False, path1="./data/raw/test_FD001.txt", path2='./data/raw/RUL_FD001.txt')
-    test_df = test_set_maker.make_dataframe()
-
-    train_distribution = train_df.groupby('unit_number')['fault_detected'].value_counts(normalize=True).unstack(fill_value=0)
-    print("Train Dataset Distribution:")
-    print(train_distribution)
-
-    # For test dataset
-    test_distribution = test_df.groupby('unit_number')['fault_detected'].value_counts(normalize=True).unstack(fill_value=0)
-    print("\nTest Dataset Distribution:")
-    print(test_distribution)
-
-    '''
-    make_processed_data('../data/raw/', '../data/processed/', warning=0.66, fault=0.33)
+    parser = argparse.ArgumentParser(description="Process data from raw to processed format.")
+    parser.add_argument("--warning", type=float, default=0.66,
+                        help="Threshold for warning condition (default: 0.66).")
+    parser.add_argument("--fault", type=float, default=0.33,
+                        help="Threshold for fault condition (default: 0.33).")
+    args = parser.parse_args()
+    make_processed_data('./data/raw/', './data/processed/', warning=args.warning, fault=args.fault)
     pass

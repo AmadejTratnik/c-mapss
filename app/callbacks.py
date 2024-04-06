@@ -1,6 +1,3 @@
-from random import random
-import sys
-sys.path.append('./')
 import dash
 from dash.dependencies import Input, Output, State, ALL, MATCH
 import numpy as np
@@ -156,7 +153,10 @@ def get_callbacks(app):
             raise dash.exceptions.PreventUpdate
         s = []
 
-        result = [entry for entry in data if entry.get('time') == n_intervals][0]
+        result = [entry for entry in data if entry.get('time') == n_intervals]
+        print(result)
+        if len(result):
+            result = result[0]
         for x in output_graphs:
             current_value = x['id']['id'].split('graph-')[1]
             s.append([{'x': [[n_intervals]], 'y': [[result[current_value]]]}, [0], 10])
@@ -187,7 +187,7 @@ def get_callbacks(app):
         for _, row in df.iterrows():
             time_data.append(row.tolist()[1:])
         new_x = np.array([time_data])
-        new_predictions = np.argmax(model.predict(new_x),axis=-1)[0]
+        new_predictions = np.argmax(model.predict(new_x), axis=-1)[0]
         return new_predictions
 
     @app.callback(

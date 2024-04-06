@@ -19,4 +19,6 @@ To start Fault Detector app, simply write:
 ```
 $ (venv) python3 app/visualisation.py
 ```
+# [Modelling](./modelling/README.md)
+
 

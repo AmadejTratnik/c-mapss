@@ -109,7 +109,6 @@ layout = html.Div(
                       ], style={'border': '1px solid white', 'padding': '10px', 'margin': '5px'}),
                       dbc.Col(width=2)],
         ),
-
         dcc.Interval(id="interval", interval=100, max_intervals=100, disabled=True),
         dcc.Store(id='data-store', data={}),
         dcc.Store(id='graph-data-store', data={}),

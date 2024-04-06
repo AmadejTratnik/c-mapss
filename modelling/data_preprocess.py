@@ -32,7 +32,7 @@ def get_train_test_data(jet):
 
 def read_df(jet,train=False):
     s = 'train' if train else 'test'
-    df = pd.read_csv(f'../data/processed/{s}_{jet}.csv',)
+    df = pd.read_csv(f'./data/processed/{s}_{jet}.csv',)
     if 'Unnamed: 0' in df.columns:
         df.drop(columns=['Unnamed: 0'], inplace=True)
     df.sort_values(by=['unit_number', 'time'],inplace=True)

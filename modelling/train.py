@@ -1,12 +1,12 @@
 import time
-
+import argparse
 import numpy as np
 from data_preprocess import get_train_test_data
 from models import create_model
 
 
 def train_model_individual_sequences(model, sequences, targets, X_test, y_test, epochs, patience=4):
-    best_val_loss = np.inf  # implementing early stopping, if validation loss doesnt get any better
+    best_val_loss = np.inf  # implementing early stopping, if validation loss doesn't get any better
     early_stopping_count = 0
     train_losses = []
     train_accuracies = []
@@ -83,13 +83,20 @@ def save_fig(jet, epochs, train_losses, train_accuracies, val_losses=None, val_a
     plt.xlabel('Epoch')
     plt.ylabel('Loss/Accuracy')
     plt.legend()
-    plt.savefig(f'../app/assets/{jet}_losses_and_accuracies.png')
+    plt.savefig(f'./app/assets/{jet}_losses_and_accuracies.png')
 
 
 def main():
-    jets = 'FD001','FD002','FD003','FD004'
+    parser = argparse.ArgumentParser(description="Train models for jet sequences.")
+    parser.add_argument("--epochs", type=int, default=100,
+                        help="Number of epochs to train the models (default: 100).")
+    parser.add_argument("--patience", type=int, default=20,
+                        help="Patience for validation accuracy (default: 20).")
+
+    args = parser.parse_args()
+    jets = 'FD001', 'FD002', 'FD003', 'FD004'
+    EPOCHS = args.epochs
     for jet in jets:
-        EPOCHS = 100
         X_train, y_train, X_test, y_test = get_train_test_data(jet)
         input_shape = (None, X_train[0].shape[1])
         num_classes = y_train[0].shape[1]
@@ -103,8 +110,9 @@ def main():
             epochs=EPOCHS,
             patience=20)
         print(f"For jet {jet} we got to {len(train_losses)} epochs")
-        save_model(trained_model, f"models/{jet}_model.keras")
+        save_model(trained_model, f"./modelling/models/{jet}_model.keras")
         save_fig(jet, EPOCHS, train_losses, train_accuracies, val_losses, val_accuracies)
+
 
 if __name__ == '__main__':
     main()
