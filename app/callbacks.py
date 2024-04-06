@@ -7,7 +7,8 @@ import pandas as pd
 from dash import html, dcc
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
-
+import sys
+sys.path.append('.')
 from modelling.inference import load_jet_model
 
 
