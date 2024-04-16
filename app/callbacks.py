@@ -8,12 +8,25 @@ from dash import html, dcc
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 import sys
+
 sys.path.append('.')
-from modelling.inference import load_jet_model
+from modelling.inference import init_models, predict_fault
 
 
 def get_callbacks(app):
-    model = load_jet_model('./modelling/models/FD001_model.keras')
+    m1, m2, m3, m4 = init_models()
+
+    @staticmethod
+    def choose_model(fd_choice):
+        jet_id = fd_choice.split("/")[-1].split(".")[0].split('_')[1]
+        if jet_id == 'FD001':
+            return m1
+        elif jet_id == 'FD002':
+            return m2
+        elif jet_id == 'FD003':
+            return m3
+        else:
+            return m4
 
     @app.callback(
         Output('interval', 'n_intervals'),
@@ -155,13 +168,13 @@ def get_callbacks(app):
         s = []
 
         result = [entry for entry in data if entry.get('time') == n_intervals]
-        print(result)
         if len(result):
             result = result[0]
-        for x in output_graphs:
-            current_value = x['id']['id'].split('graph-')[1]
-            s.append([{'x': [[n_intervals]], 'y': [[result[current_value]]]}, [0], 10])
-        return s
+            for x in output_graphs:
+                current_value = x['id']['id'].split('graph-')[1]
+                s.append([{'x': [[n_intervals]], 'y': [[result[current_value]]]}, [0], 10])
+            return s
+        raise dash.exceptions.PreventUpdate
 
     @app.callback(
         Output('data-store', 'data'),
@@ -175,20 +188,21 @@ def get_callbacks(app):
         Output('unit-prediction-vector', 'data'),
         Input('unit-slider', 'value'),
         State('data-store', 'data'),
+        State('fd-choice-dropdown', 'value'),
     )
-    def update_prediction_matrix(value, data):
+    def update_prediction_matrix(value, data, fd_choice):
         if not data or not len(data):
             raise dash.exceptions.PreventUpdate
 
         df = pd.DataFrame(data)
         df = df[df['unit_number'] == value]
-        fault_detected = df['fault_detected']
         df.drop(columns=['unit_number', 'fault_detected'], inplace=True)
         time_data = []
         for _, row in df.iterrows():
             time_data.append(row.tolist()[1:])
         new_x = np.array([time_data])
-        new_predictions = np.argmax(model.predict(new_x), axis=-1)[0]
+        model = choose_model(fd_choice)
+        new_predictions = predict_fault(model, new_x)
         return new_predictions
 
     @app.callback(
