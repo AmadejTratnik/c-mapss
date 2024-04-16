@@ -26,5 +26,5 @@ $ (venv) python3 app/visualisation.py
 - [x] Train a sufficient lightweight models
 - [x] Implement a Dash app that allows model inference and helps understand the problem
 - [ ] Implement Neural Architecture Search (NAS) for each JET engine
-- [ ] Evaluate models inference and predictions ([Predictions vs. Measured Faults]())
+- [ ] Evaluate models predictions ([Residuals](modelling/README.md#final-results))
 - [ ] Explainable AI ([Sensor importance list for each engine]())

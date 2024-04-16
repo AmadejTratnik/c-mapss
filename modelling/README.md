@@ -38,11 +38,24 @@
 
 ## Final results
 
+---
 ### Train / validation losses
 
 |                                                    FDOO1                                                    |                                                    FD002                                                    | FD003                                                                                                       | FD004                                                                                                       |
 |:-----------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | [<img src="../app/assets/FD001_losses_and_accuracies.png"/>](../app/assets/FD001_losses_and_accuracies.png) | [<img src="../app/assets/FD002_losses_and_accuracies.png"/>](../app/assets/FD002_losses_and_accuracies.png) | [<img src="../app/assets/FD003_losses_and_accuracies.png"/>](../app/assets/FD003_losses_and_accuracies.png) | [<img src="../app/assets/FD004_losses_and_accuracies.png"/>](../app/assets/FD004_losses_and_accuracies.png) |                                                                                       |                                                                                       |
+
+---
+### Residuals
+Residual is calculated as:`prediction - target`:
++ In our case, when we subtract target vector from prediction vector, we get a set of values `{-2, -1, 0, 1, 2}`:
+  + `0` is our goal, since it means that the prediction is the same as the target
+  + Since models are lightweight and not perfect, we try to make our models a bit more sensitive (skewness to the right in the residuals graphs), so that in real life, the prediction of fault would come earlier than the actual fault. 
+
+|                                              FDOO1                                              |                                                    FD002                                                    | FD003                                                                                                       | FD004                                                                                                       |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| [<img src="../app/assets/FD001_residuals.png"/>](../app/assets/FD001_residuals.png) | [<img src="../app/assets/FD002_residuals.png"/>](../app/assets/FD002_residuals.png) | [<img src="../app/assets/FD003_residuals.png"/>](../app/assets/FD003_residuals.png) | [<img src="../app/assets/FD004_residuals.png"/>](../app/assets/FD004_residuals.png) |                                                                                       |                                                                                       |
+
 
 ### Final parameters descriptions
 
