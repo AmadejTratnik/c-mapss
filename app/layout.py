@@ -57,7 +57,7 @@ layout = html.Div(
         dbc.Row(
             id="fd-and-operational",
             style={'margin': '1%'},
-            children=[dbc.Col(width=2,
+            children=[dbc.Col(width=3,
                               id="graph-fault_calculated-div",
                               children=[
 
@@ -72,10 +72,12 @@ layout = html.Div(
                                                       xaxis=dict(showline=False, visible=False, showgrid=False,
                                                                  zeroline=True,
                                                                  fixedrange=False),
-                                                      yaxis=dict(showline=False,
-                                                                 range=[0, 2],
-                                                                 visible=False, showgrid=False,
+                                                      yaxis=dict(range=[-0.5, 2.5],
+                                                                 showgrid=False,
                                                                  zeroline=False,
+                                                                 tickvals=[0, 1, 2],
+                                                                 ticktext=["OK", "WARN", "FAULT"],
+                                                                 tickfont=dict(size=15, color='white'),
                                                                  fixedrange=True),
                                                       margin=dict(t=0, b=0, l=0, r=0),
                                                       autosize=True, )
@@ -84,7 +86,7 @@ layout = html.Div(
                               ], style={'border': '1px solid white', 'padding': '10px', 'margin': '5px',
                                         'display': 'None'}),
 
-                      dbc.Col(width=2, children=[
+                      dbc.Col(width=3, children=[
                           html.P("PREDICTED FAULT"),
                           dcc.Graph(
                               id={'type': 'graph1', 'id': f'graph-fault_predicted'},
@@ -97,10 +99,12 @@ layout = html.Div(
                                   layout=dict(paper_bgcolor="rgba(0, 0, 0, 0)", plot_bgcolor="rgba(0, 0, 0, 0)",
                                               xaxis=dict(showline=False, visible=False, showgrid=True, zeroline=False,
                                                          fixedrange=False),
-                                              yaxis=dict(showline=False,
-                                                         range=[0, 2],
-                                                         visible=False, showgrid=False,
+                                              yaxis=dict(range=[-0.5, 2.5],
+                                                         showgrid=False,
                                                          zeroline=False,
+                                                         tickvals=[0, 1, 2],
+                                                         ticktext=["OK", "WARN", "FAULT"],
+                                                         tickfont=dict(size=15, color='white'),
                                                          fixedrange=True),
                                               margin=dict(t=0, b=0, l=0, r=0),
                                               autosize=True, )
