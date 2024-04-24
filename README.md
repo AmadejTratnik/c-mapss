@@ -26,11 +26,14 @@ To start Fault Detector app, simply write:
 ```
 $ (venv) python3 app/visualisation.py
 ```
+
 [<img src="app/assets/dash_app.gif"/>](app/assets/dash_app.gif)
 
-For demonstration purposes, the model currently predicts a **fault vector**. In a real-world scenario, the model would likely predict a **fault scalar**.
+For demonstration purposes, the model currently predicts a **fault vector**. In a real-world scenario, the model would
+likely predict a **fault scalar**.
 
-This scalar would represent the overall fault classification (e.g., "OK", "Warning", "Fault") based on the current measurements.
+This scalar would represent the overall fault classification (e.g., "OK", "Warning", "Fault") based on the current
+measurements.
 
 ## [Modelling report](./modelling/README.md)
 
@@ -39,6 +42,5 @@ This scalar would represent the overall fault classification (e.g., "OK", "Warni
 - [x] Reformat the RUL problem to a fault detection (0 - ok, 1 - warning, 2-fault)
 - [x] Train a sufficient lightweight models
 - [x] Implement a Dash app that allows model inference and helps understand the problem
-- [ ] Implement Neural Architecture Search (NAS) for each JET engine
+- [ ] Finetune hyperparameters or architecture for each JET engine (NAS took too much resources and time)
 - [x] Evaluate models predictions ([Residuals](modelling/README.md#residuals))
-- [ ] Explainable AI ([Sensor importance list for each engine]())
