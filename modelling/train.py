@@ -1,8 +1,6 @@
-import time
 import argparse
-import numpy as np
 from data_preprocess import get_train_test_data
-from models import create_model
+from models import *
 
 
 def train_model_individual_sequences(model, sequences, targets, X_test, y_test, epochs, patience=4):
@@ -90,12 +88,13 @@ def main():
     parser = argparse.ArgumentParser(description="Train models for jet sequences.")
     parser.add_argument("--epochs", type=int, default=100,
                         help="Number of epochs to train the models (default: 100).")
-    parser.add_argument("--patience", type=int, default=20,
-                        help="Patience for validation accuracy (default: 20).")
+    parser.add_argument("--patience", type=int, default=10,
+                        help="Patience for validation accuracy (default: 10).")
 
     args = parser.parse_args()
     jets = 'FD001', 'FD002', 'FD003', 'FD004'
     EPOCHS = args.epochs
+    PATIENCE = args.patience
     for jet in jets:
         X_train, y_train, X_test, y_test = get_train_test_data(jet)
         input_shape = (None, X_train[0].shape[1])
@@ -108,11 +107,28 @@ def main():
             X_test,
             y_test,
             epochs=EPOCHS,
-            patience=20)
-        print(f"For jet {jet} we got to {len(train_losses)} epochs")
+            patience=PATIENCE)
+        train_message_print(trained_model, jet, train_losses, train_accuracies, val_losses, val_accuracies)
         save_model(trained_model, f"./modelling/models/{jet}_model.keras")
         save_fig(jet, EPOCHS, train_losses, train_accuracies, val_losses, val_accuracies)
 
+def train_message_print(model, jet, train_losses, train_accuracies, val_losses, val_accuracies):
+    print(
+        f"Jet {jet} training results:\n\t+ epochs: {len(train_losses)}\n\t+ train loss: {last_5_mean(train_losses)}\n\t+ train accuracy: {last_5_mean(train_accuracies)}\n\t+ validation loss: {last_5_mean(val_losses)}\n\t+ validation accuracy: {last_5_mean(val_accuracies)}")
+    print(model.summary())
+    print("-"*50)
+
+
+def last_5_mean(my_list: list) -> float:
+    return sum(my_list[-5:]) / 5
+
 
 if __name__ == '__main__':
+    # model = create_model((None,10), 12)
+    # jet = "fd001"
+    # train_losses = [1,2,3,4,5]
+    # train_accuracies = [1,2,3,4,5]
+    # val_losses = [1,2,3,4,5]
+    # val_accuracies = [1,2,3,4,5]
+    # train_message_print(model,jet,train_losses,train_accuracies,val_losses,val_accuracies)
     main()
