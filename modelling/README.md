@@ -7,7 +7,7 @@
   noises in sensors.
 + Since the non-linearity holds, neural network approach should be advised.
 
-### Measurements visualization of dataset FD001
+## Measurements visualization of dataset FD001
 
 [<img src="../app/assets/eda.png"/>](app/assets/eda.png)
 
@@ -22,7 +22,7 @@
 + **Reformat the problem**: If we can model the RUL of a certain jet, we should be able to split the measurements to *
   *INFO -> WARNING -> FAULT**.
 
-### Modelling problems and solutions
+## Modelling problems and solutions
 
 + Measurements classification splitting (*garbage-in, garbage-out*). It's a subject matter expertise knowledge to decide
   when the model should be warned and when does the fault start.
@@ -36,17 +36,17 @@
 + Validation calculation is slow and should be optimized for bigger datasets.
 + Classes 0,1 and 2 are not evenly distributed.
 
-## Final results
-
+## Model architecture
+[<img src="../app/assets/FD001_model.png" height=500px/>](../app/assets/FD001_model.png)
 ---
-### Train / validation losses
+## Train / validation losses
 
 |                                                    FDOO1                                                    |                                                    FD002                                                    | FD003                                                                                                       | FD004                                                                                                       |
 |:-----------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | [<img src="../app/assets/FD001_losses_and_accuracies.png"/>](../app/assets/FD001_losses_and_accuracies.png) | [<img src="../app/assets/FD002_losses_and_accuracies.png"/>](../app/assets/FD002_losses_and_accuracies.png) | [<img src="../app/assets/FD003_losses_and_accuracies.png"/>](../app/assets/FD003_losses_and_accuracies.png) | [<img src="../app/assets/FD004_losses_and_accuracies.png"/>](../app/assets/FD004_losses_and_accuracies.png) |                                                                                       |                                                                                       |
 
 ---
-### Residuals
+## Residuals
 
 |                                              FDOO1                                              |                                                    FD002                                                    | FD003                                                                                                       | FD004                                                                                                       |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -56,14 +56,3 @@ Residual is calculated as:`prediction - target`:
 + In our case, when we subtract target vector from prediction vector, we get a set of values `{-2, -1, 0, 1, 2}`:
   + `0` is our goal, since it means that the prediction is the same as the target
   + Since models are lightweight and not perfect, we agree to make our models a bit more sensitive (skewness to the right in the residuals graphs), so that in real life, the prediction of fault would come earlier than the actual fault.
----
-### Final parameters descriptions
-
-|                    |                                          FDOO1                                           |                                          FD002                                           | FD003                                                                                    | FD004                                                                                    |
-|:------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-|     Train loss     |                                                                                          |                                                                                          |                                                                                          |                                                                                          |
-|  Validation loss   |                                                                                          |                                                                                          |                                                                                          |                                                                                          |
-|   Train accuracy   |                                                                                          |                                                                                          |                                                                                          |                                                                                          |
-| Validation accuracy |                                                                                          |                                                                                          |                                                                                          |                                                                                          |
-|       Epochs       |                                                                                          |                                                                                          |                                                                                          |                                                                                          |
-| Model architecture | [<img src="../app/assets/FD001_model.png" height=500px/>](../app/assets/FD001_model.png) | [<img src="../app/assets/FD002_model.png" height=500px/>](../app/assets/FD002_model.png) | [<img src="../app/assets/FD003_model.png" height=500px/>](../app/assets/FD003_model.png) | [<img src="../app/assets/FD004_model.png" height=500px/>](../app/assets/FD004_model.png) |

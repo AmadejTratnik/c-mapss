@@ -42,5 +42,5 @@ measurements.
 - [x] Reformat the RUL problem to a fault detection (0 - ok, 1 - warning, 2-fault)
 - [x] Train a sufficient lightweight models
 - [x] Implement a Dash app that allows model inference and helps understand the problem
-- [ ] Finetune hyperparameters or architecture for each JET engine (NAS took too much resources and time)
+- [ ] Finetune hyperparameters or architecture for each JET engine
 - [x] Evaluate models predictions ([Residuals](modelling/README.md#residuals))
